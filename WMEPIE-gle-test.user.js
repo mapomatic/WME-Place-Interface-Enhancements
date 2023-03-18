@@ -51,7 +51,7 @@ var UpdateObject, MultiAction;
     let hoursparser;
     let GLE;
     var catalog = [];
-    const updateMessage = "Update for WazeWrap changes, implementing part of the new WME API.";
+    const updateMessage = "";
     var lastSelectedFeature;
 
     //Layer definitions
