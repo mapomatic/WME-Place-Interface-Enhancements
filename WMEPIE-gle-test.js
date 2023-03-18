@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         WME Place Interface Enhancements
+// @name         WME Place Interface Enhancements (GLE test)
 // @namespace    https://greasyfork.org/users/30701-justins83-waze
-// @version      2023.03.15.01
+// @version      2023.03.18.01
 // @description  Enhancements to various Place interfaces
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -16,7 +16,7 @@
 // @require      https://greasyfork.org/scripts/27023-jscolor/code/JSColor.js
 // @require      https://greasyfork.org/scripts/37486-wme-utils-hoursparser.js
 // @require      https://greasyfork.org/scripts/38421-wme-utils-navigationpoint/code/WME%20Utils%20-%20NavigationPoint.js?version=251065
-// @require      https://greasyfork.org/scripts/39208-wme-utils-google-link-enhancer/code/WME%20Utils%20-%20Google%20Link%20Enhancer.js
+// @require      https://raw.githubusercontent.com/WazeDev/WME-Utils/gle-new-api-alpha/GoogleLinkEnhancer.js
 // @require      https://greasyfork.org/scripts/375202-photo-viewer-db-interface/code/Photo%20Viewer%20DB%20Interface.js
 // @contributionURL https://github.com/WazeDev/Thank-The-Authors
 // @license      GPLv3
@@ -1447,7 +1447,6 @@ var UpdateObject, MultiAction;
     }
 
     function AddHoursParserInterface(){
-        //debugger;
         if(WazeWrap.hasPlaceSelected()){
             var $PIEHoursParser = $("<div>", {style:"min-height:20px"});
             if(!$('#PIEHoursParserDiv').length){
@@ -2514,7 +2513,6 @@ var UpdateObject, MultiAction;
     async function InsertGeometryMods(){
         $('#pieGeometryMods').remove();
         $('#pieViewEditGeom').remove(); //remove the Place geometry window when the option is disabled or a Place is de-selected
-        //debugger;
         if((WazeWrap.hasPlaceSelected() || WazeWrap.hasMapCommentSelected()) && WazeWrap.getSelectedFeatures()[0].model.geometry.toString().match(/^POLYGON/)){
             await new Promise(r => setTimeout(r, 150));
             let $GeomMods = $(`<div class="form-group" id="pieGeometryMods"><label class="control-label">Geometry</label><div class="controls">${!WazeWrap.hasMapCommentSelected() ? '<i id="pieorthogonalize" title="Orthogonalize" class="fa fa-plus-square-o fa-2x" aria-hidden="true" style="cursor:pointer;"></i> <i id="piesimplifyplace" title="Simplify" class="fa fa-magic fa-2x" aria-hidden="true" style="cursor:pointer;"></i>' : ''} <i id="pierotate" title="Allow rotating the Place" class="fa fa-repeat fa-2x" aria-hidden="true" style="cursor:pointer; color:${settings.Rotate ? 'rgb(0,180,0)': 'black'}"></i> <i id="pieresize" title="Allow resizing the Place. While enabled the geometry cannot be modified" class="fa fa-expand fa-2x" aria-hidden="true" style="cursor:pointer; color:${settings.Resize ? 'rgb(0,180,0)': 'black'}"></i> <i id="pieEditGeom" class="fa fa-pencil-square-o fa-2x" aria-hidden="true" style="cursor:pointer;"></i> <i id="pieClearGeom" title="Clear geometry" class="fa fa-times fa-2x" aria-hidden="true" style="cursor:pointer; color:red;"></i></div></div>`);
