@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Place Interface Enhancements (GLE test)
 // @namespace    https://greasyfork.org/users/30701-justins83-waze
-// @version      2023.03.18.03
+// @version      2023.03.20.01
 // @description  Enhancements to various Place interfaces
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -371,14 +371,6 @@ var UpdateObject, MultiAction;
                 unregisterEvents(AddPlaceCategoriesButtons);
         });
 
-        $('#_cbMoveAddress').change(function(){
-            //This is now supported natively in WME (beta as of 2017-10-16)
-            /*if(this.checked)
-                registerEvents(MoveAddress);
-            else
-                unregisterEvents(MoveAddress);*/
-        });
-
         $('#_cbMoveHNEntry').change(function(){
             if(this.checked)
                 registerEvents(MoveHNEntry);
@@ -498,7 +490,6 @@ var UpdateObject, MultiAction;
         setChecked('_cbClearDescription', settings.ClearDescription);
         setChecked('_cbPlaceNameFontBold', settings.PlaceNameFontBold);
         setChecked('_cbPlaceLocatorCrosshairProdPL', settings.PlaceLocatorCrosshairProdPL);
-        //setChecked('_cbMoveAddress', settings.MoveAddress); //Native support as of 2017-10-24
         setChecked('_cbMoveHNEntry', settings.MoveHNEntry);
         setChecked('_cbShowPLSpotEstimatorButton', settings.ShowPLSpotEstimatorButton);
         setChecked('_cbShowNavPointClosestSegmentOnHover', settings.ShowNavPointClosestSegmentOnHover);
@@ -580,12 +571,6 @@ var UpdateObject, MultiAction;
             registerEvents(ShowClearDescription);
             ShowClearDescription();
         }
-
-        //Native support as of 2017-10-24
-        /*if(settings.MoveAddress){
-            registerEvents(MoveAddress);
-            MoveAddress();
-        }*/
 
         if(settings.MoveHNEntry){
             registerEvents(MoveHNEntry);
@@ -2138,7 +2123,7 @@ var UpdateObject, MultiAction;
     }
 
     function getMousePos900913(){
-        var mousePosition = $('.WazeControlMousePosition').text().split(" ");
+        var mousePosition = $('.wz-map-ol-control-span-mouse-position').text().split(" ");
         [mousePosition[0], mousePosition[1]] = [mousePosition[1], mousePosition[0]];
         return WazeWrap.Geometry.ConvertTo900913(mousePosition[0], mousePosition[1]);
     }
@@ -2276,15 +2261,6 @@ var UpdateObject, MultiAction;
 
         return $lockLevels.html();
     }
-
-    //implementd natively as of 2019-01-22
-    /*function attachRPPLockButtonHandlers(){
-        $('#pieRPPLockButtonsContainer').remove();
-        W.selectionManager.events.register("selectionchanged", null, addLockButtons);
-        W.model.actionManager.events.register("afterundoaction",null, addLockButtons);
-        W.model.actionManager.events.register("afterclearactions",null, addLockButtons);
-        W.model.actionManager.events.register("afteraction",null, addLockButtons);
-    }*/
 
     function attachPlaceSizeHandlers(){
         WazeWrap.Events.register("selectionchanged", null, updatePlaceSizeDisplay);
@@ -3180,17 +3156,6 @@ var UpdateObject, MultiAction;
         }
     }
 
-    //supported in production as of 2019-01-22
-    /*function AddEEPJumpButtons(){
-        if(WazeWrap.isBetaEditor)
-            return;
-        $('.navigation-point-list-item').find('.buttons').prepend('<div><i id="EEPCrosshair" class="fa fa-crosshairs" style="color:#2f799b" aria-hidden="true"></i></div>');
-        $('#EEPCrosshair').click(function(){
-            let point = WazeWrap.getSelectedFeatures()[0].model.attributes.entryExitPoints[0]._point;
-            W.map.setCenter([point.x, point.y], W.map.getZoom());
-        });
-    }*/
-
     function AddPlaceCategoriesButtons(){
         $('#piePlaceCategoriesButtonsContainer').remove();
         if(WazeWrap.getSelectedFeatures().length > 0){
@@ -3308,54 +3273,6 @@ var UpdateObject, MultiAction;
             }
         }
     }
-
-    //supported in production as of 2019-01-22
-    //Using the same display for lock buttons as ClickSaver (with permission from MapoMatic) - thanks MoM!
-    /*function addLockButtons() {
-        if(WazeWrap.isBetaEditor)
-            return;
-        if(WazeWrap.getSelectedFeatures().length > 0){
-            var item = WazeWrap.getSelectedFeatures()[0];
-            var isRPP = item.model.type === "venue" && item.model.isResidential(); //(item.model.type === "venue" && item.model.attributes.residential === true);
-
-            if(isRPP){
-                var attr = item.model.attributes;
-                var autoRank = attr.rank;
-                var manualRank = attr.lockRank;
-                var firstManualRank = manualRank;
-                var userRank = WazeWrap.User.Rank() - 1;
-                var maxAutoRank = autoRank;
-                var disabled = false;
-
-                var $div = $('#pieRPPLockButtonsContainer');
-                $div.remove();
-                $div = $('<div>',{id:'pieRPPLockButtonsContainer',style:'margin-bottom:5px;'});
-                $div.append('<label class="control-label">Lock</label>');
-                var $controls = $('<div>', {class:'waze-radio-container'});
-                var btnInfos = [];
-
-                for(var iBtn=0;iBtn<=6;iBtn++)
-                    btnInfos.push({r:iBtn,val:iBtn});
-                btnInfos.forEach(function(btnInfo){
-                    var selected = (btnInfo.val == manualRank);
-                    disabled = userRank < btnInfo.val;
-                    if (btnInfo.val !== 6) {
-                        $controls.append(
-                            $(`<input type="radio" name="lockRank" value="${btnInfo.r}" id="lockRank-${btnInfo.r}" data-type="numeric" data-nullable="true" ${btnInfo.val == manualRank ? "checked" : ""} ${disabled ? "disabled" : ""}><label for="lockRank-${btnInfo.r}" value="${btnInfo.r}">${btnInfo.r+1}</label>`)
-                            .click(function() {
-                                if((userRank >= parseInt($(this).attr('value'))) && (btnInfo.r < 6)) {
-                                    W.model.actionManager.add(new UpdateObject(item.model,{lockRank:(parseInt($(this).attr('value')))}));
-                                    addLockButtons();
-                                }
-                            })
-                        );
-                    }
-                });
-                $div.append($controls);
-                $('#venue-edit-general > form.attributes-form.side-panel-section').after($div);
-            }
-        }
-    }*/
 
     var getPermalink = function(currPl) {
         var adjustedPL = currPl.substr(currPl.lastIndexOf('editor')).replace(/&[^&]*Filter=[^&]*|&s=(\d+)/ig,'');
