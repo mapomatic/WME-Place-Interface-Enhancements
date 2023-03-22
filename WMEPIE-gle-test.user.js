@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Place Interface Enhancements (GLE test)
 // @namespace    https://greasyfork.org/users/30701-justins83-waze
-// @version      2023.03.20.01
+// @version      2023.03.22.01
 // @description  Enhancements to various Place interfaces
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
