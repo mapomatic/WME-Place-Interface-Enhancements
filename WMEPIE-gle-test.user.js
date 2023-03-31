@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Place Interface Enhancements (GLE test)
 // @namespace    https://greasyfork.org/users/30701-justins83-waze
-// @version      2023.03.31.01
+// @version      2023.03.31.02
 // @description  Enhancements to various Place interfaces
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -735,44 +735,52 @@ var UpdateObject, MultiAction;
         }, false);
 
         let extprovobserver = new MutationObserver(function(mutations) {
-               mutations.forEach(function(mutation) {
+            mutations.forEach(function(mutation) {
 
-                   /*if ($(mutation.target).hasClass('external-providers-view'))
-                       if(W.loginManager.user.normalizedLevel === 1)
-                           $('.external-providers-view').parent().parent().remove();
-                           */
+                /*if ($(mutation.target).hasClass('external-providers-view'))
+                    if(W.loginManager.user.normalizedLevel === 1)
+                        $('.external-providers-view').parent().parent().remove();
+                        */
 
-                       for (var i = 0; i < mutation.addedNodes.length; i++) {
-                           var addedNode = mutation.addedNodes[i];
-                           // Only fire up if it's a node
-                           if (addedNode.nodeType === Node.ELEMENT_NODE && ($(addedNode).hasClass('address-edit-view') || $(addedNode).hasClass('conversation-view'))) {
-                               //Hide the suggested categories for Shopping / Services due to the amount of vertical space it takes up - is often used as a valid category
-                               if(WazeWrap.hasPlaceSelected())
-                                   if (settings.HideShopAndServices && WazeWrap.getSelectedFeatures()[0].model.attributes.categories.length === 1 && WazeWrap.getSelectedFeatures()[0].model.attributes.categories[0] === 'SHOPPING_AND_SERVICES')
-                                       $('.suggested-categories').remove();
-                               updatePlaceSizeDisplay();
-                               AddPlaceCategoriesButtons();
-                               delayFire(250, AddHoursParserInterface);
-                               //AddHoursParserInterface();
-                               AddMakePrimaryButtons();
-                               if(settings.ShowPlaceLocatorCrosshair)
-                                   ShowPlaceLocatorCrosshair();
-                               if(settings.ShowSearchButton)
-                                   ShowSearchButton();
-                               if(settings.ShowParkingLotButton)
-                                   ShowParkingLotButton();
-                               if(settings.ShowCopyPlaceButton)
-                                   ShowCopyPlaceButton();
-                               if(settings.GeometryMods)
-                                   InsertGeometryMods();
-                           }
-                           else if(addedNode.nodeType === Node.ELEMENT_NODE && $(addedNode).hasClass('payment-checkbox')){
-                               if(settings.HidePaymentType)
-                                   _hidePaymentType();
-                           }
-                       }
-               });
-           });
+                    for (var i = 0; i < mutation.addedNodes.length; i++) {
+                        var addedNode = mutation.addedNodes[i];
+                        // Only fire up if it's a node
+                        if (addedNode.nodeType === Node.ELEMENT_NODE && ($(addedNode).hasClass('address-edit-view') || $(addedNode).hasClass('conversation-view'))) {
+                            updatePlaceSizeDisplay();
+                            AddPlaceCategoriesButtons();
+                            delayFire(250, AddHoursParserInterface);
+                            //AddHoursParserInterface();
+                            AddMakePrimaryButtons();
+                            if(settings.ShowPlaceLocatorCrosshair)
+                                ShowPlaceLocatorCrosshair();
+                            if(settings.ShowSearchButton)
+                                ShowSearchButton();
+                            if(settings.ShowParkingLotButton)
+                                ShowParkingLotButton();
+                            if(settings.ShowCopyPlaceButton)
+                                ShowCopyPlaceButton();
+                            if(settings.GeometryMods)
+                                InsertGeometryMods();
+                        }
+                        else if(addedNode.nodeType === Node.ELEMENT_NODE && $(addedNode).hasClass('payment-checkbox')){
+                            if(settings.HidePaymentType)
+                                _hidePaymentType();
+                        }
+                    }
+            });
+        });
+     
+     W.model.venues.on('objectschanged', venues => {
+         //Hide the suggested categories for Shopping / Services due to the amount of vertical space it takes up - is often used as a valid category
+         try { 
+             if (WazeWrap.hasPlaceSelected())
+                 if (settings.HideShopAndServices && WazeWrap.getSelectedFeatures()[0].model.attributes.categories.length === 1 && WazeWrap.getSelectedFeatures()[0].model.attributes.categories[0] === 'SHOPPING_AND_SERVICES')
+                     $('wz-card.categories-card:eq(1)').hide();
+         } catch (ex) {
+             // Log error and move on.
+             console.error('PIE:', ex);
+         }
+     });
 
         extprovobserver.observe(document.getElementById('edit-panel'), { childList: true, subtree: true });
 
